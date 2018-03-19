@@ -37,5 +37,18 @@ void ATankAIController::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("ai calling doesn't have a tank"));
 	}
 }
+void ATankAIController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (GetPlayerTank()) {
+		// TODO Move towards player
+
+		//Aim towards player
+		GetControlledTank()->AimAt(GetPlayerTank()->GetActorLocation());
+	
+		// Fire if ready
+	}
+}
 
 
