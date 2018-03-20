@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Tank.generated.h"
+class UTankBarrel;
 
 UCLASS()
 class BATTLETANK_API ATank : public APawn
@@ -28,7 +29,12 @@ private:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	
 public:
-	void AimAt(FVector HitLocation);
+	void AimAt(FVector HitLocation, float LaunchSpeed);
+	UFUNCTION(BlueprintCallable)
+	void SetBarrelReference(UTankBarrel* BarrelToSet);
+	UPROPERTY(EditAnywhere, Category = Firing)
+		float LaunchSpeed = 100000;
 	
 };

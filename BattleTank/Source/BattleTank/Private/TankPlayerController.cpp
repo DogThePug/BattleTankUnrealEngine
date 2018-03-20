@@ -37,7 +37,7 @@ void ATankPlayerController::AimTowardsCrosshair()
 	FVector HitLocation; // OUT parameter
 	if (GetSightRayHitLocation(HitLocation))
 	{
-		GetControlledTank()->AimAt(HitLocation);
+		GetControlledTank()->AimAt(HitLocation, GetControlledTank()->LaunchSpeed);
 		///Get World Location of linetrace throught crosshair	
 		/// if it hits the landscape
 		 /// Tell the barrel to aim there
