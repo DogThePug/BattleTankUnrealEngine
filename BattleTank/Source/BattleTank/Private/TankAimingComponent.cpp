@@ -3,6 +3,7 @@
 #include "TankAimingComponent.h"
 #include "GameFramework/Actor.h"
 #include "TankBarrel.h"
+#include "Turret.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/StaticMeshComponent.h"
 // Sets default values for this component's properties
@@ -21,41 +22,64 @@ void UTankAimingComponent::SetBarrelReference(UTankBarrel * BarrelToSet)
 	Barrel = BarrelToSet;
 }
 
+void UTankAimingComponent::SetTurretReference(UTurret * TurretToSet)
+{
+	TankTurret = TurretToSet;
+}
+
 
 void UTankAimingComponent::AimAt(FVector WorldSpaceAim, float ProjectileSpeed)
 {
-	if (!Barrel) return;
+	
+	if (!Barrel || !TankTurret) return;
 	FVector OutLaunchVelocity;
 	FVector StartLocation = Barrel->GetSocketLocation(FName("FiringPoint"));
 	/// Calculate the launch velocity (launch vector)
-	UGameplayStatics* VelocityCounter;
 	TArray<AActor*> ActorsToIgnore;
-	if (VelocityCounter->SuggestProjectileVelocity(
+	bool bSolutionFound = UGameplayStatics::SuggestProjectileVelocity
+	(
 		this,
 		OutLaunchVelocity,
 		StartLocation,
 		WorldSpaceAim,
 		ProjectileSpeed,
 		false,
-		100,
-		10,
-		ESuggestProjVelocityTraceOption::DoNotTrace,
-		FCollisionResponseParams::DefaultResponseParam,
-		ActorsToIgnore,
-		false
-	)) {
+		0,
+		0,
+		ESuggestProjVelocityTraceOption::DoNotTrace
+	);
+		if(bSolutionFound) 
+		{
 		auto AimDirection = OutLaunchVelocity.GetSafeNormal();
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *AimDirection.ToString());
-		//MoveBarrel()
-		
-	}
+		MoveBarrelTowards(AimDirection);
+		MoveTurretTowards(AimDirection);
+		}
 }
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 {
 	// Work out a difference between corrent barrel rotation and AimDirection
+	auto DeltaRotation = FindDifferenceInRotation(Barrel, AimDirection);
+	//Move the barrel the right amount this frame
+	Barrel->ElevateBarrel(DeltaRotation.Pitch);
+}
+
+void UTankAimingComponent::MoveTurretTowards(FVector AimDirection)
+{
+	auto DeltaRotation = FindDifferenceInRotation(TankTurret, AimDirection);
+	TankTurret->RotateTurret(DeltaRotation.Yaw);
+}
+
+FRotator UTankAimingComponent::FindDifferenceInRotation(UTankBarrel * Barrel, FVector AimDirection)
+{
 	auto BarrelRotation = Barrel->GetForwardVector().Rotation();
 	auto AimAsRotation = AimDirection.Rotation();
 	auto DeltaRotation = AimAsRotation - BarrelRotation;
-	//Move the barrel the right amount this frame
-	Barrel->ElevateBarrel(5);
+	return DeltaRotation;
+}
+FRotator UTankAimingComponent::FindDifferenceInRotation(UTurret * Turret, FVector AimDirection)
+{
+	auto BarrelRotation = Turret->GetForwardVector().Rotation();
+	auto AimAsRotation = AimDirection.Rotation();
+	auto DeltaRotation = AimAsRotation - BarrelRotation;
+	return DeltaRotation;
 }
