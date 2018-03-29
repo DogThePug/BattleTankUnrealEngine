@@ -46,6 +46,11 @@ void ATank::SetTurretReference(UTurret * TurretToSet)
 
 void ATank::Fire()
 {
+	if (!ProjectileBlueprint) 
+	{
+	UE_LOG(LogTemp, Error, TEXT("Tank doesn't have projectile set up!"));
+	return;
+	}
 	bool bIsReloaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTime;
 	if (Barrel && bIsReloaded) {
 
