@@ -6,49 +6,28 @@
 #include "GameFramework/Actor.h"
 #include "BattleTank.h"
 
-ATank * ATankAIController::GetControlledTank() const
-{
-	return Cast<ATank>(GetPawn());
-}
-ATank * ATankAIController::GetPlayerTank() const
-{
-	APawn * PlayerTank = GetWorld()->GetFirstPlayerController()->GetPawn();
-	return Cast<ATank>(PlayerTank);
-}
+
 void ATankAIController::BeginPlay()
 {
 	Super::BeginPlay();
-
-	ATank * ControlledTank = GetControlledTank();
-	ATank * PlayerTank = GetPlayerTank();
-	if (PlayerTank)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s player tank found"), *PlayerTank->GetName());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player tank not found!"));
-	}
-	if (ControlledTank)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s ai calling"), *ControlledTank->GetName());
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("ai calling doesn't have a tank"));
-	}
+	APawn * PlayerTankPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+	ATank * ControlledTank = Cast<ATank>(GetPawn());
+	ATank * PlayerTank = Cast<ATank>(PlayerTankPawn);
 }
 void ATankAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	ATank * ControlledTank = Cast<ATank>(GetPawn());
+	ATank * PlayerTank = Cast<ATank>(GetWorld()->GetFirstPlayerController()->GetPawn());
 
-	if (GetPlayerTank()) {
+	if (PlayerTank) {
 		// TODO Move towards player
 
 		//Aim towards player
-		GetControlledTank()->AimAt(GetPlayerTank()->GetActorLocation(), GetControlledTank()->LaunchSpeed);
+		ControlledTank->AimAt(PlayerTank->GetActorLocation(), ControlledTank->LaunchSpeed);
 	
 		// Fire if ready
+		ControlledTank->Fire();
 	}
 }
 

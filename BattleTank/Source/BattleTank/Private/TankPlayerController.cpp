@@ -16,11 +16,7 @@ void ATankPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	auto ControlledTank = GetControlledTank();
-	if (ControlledTank)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("%s Tank found"), *(ControlledTank->GetName()));
-	}
-	else
+	if(!ControlledTank)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Tank not found"));
 	}
