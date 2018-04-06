@@ -21,7 +21,7 @@ class BATTLETANK_API ATank : public APawn
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	UPROPERTY(BlueprintReadOnly)
 	UTankAimingComponent* TankAimingComponent = nullptr;
 	UPROPERTY(BlueprintReadOnly)
 	UTankMovementComponent* TankMovementComponent = nullptr;
@@ -35,13 +35,11 @@ private:
 
 	
 public:
+	UFUNCTION(BlueprintCallable)
+	void SetupAimingComponent(UTankAimingComponent* AimingComponent);
+	UFUNCTION(BlueprintCallable)
+	//void InitialiseBarrelAndTurret(UTankBarrel* BarrelToSet, UTurret* TurretToSet);
 	void AimAt(FVector HitLocation, float LaunchSpeed);
-	UFUNCTION(BlueprintCallable)
-	void SetBarrelReference(UTankBarrel* BarrelToSet);
-
-	UFUNCTION(BlueprintCallable)
-	void SetTurretReference(UTurret* TurretToSet);
-
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
 	float LaunchSpeed = 100000;
 

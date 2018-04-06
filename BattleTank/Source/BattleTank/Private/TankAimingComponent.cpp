@@ -17,15 +17,6 @@ UTankAimingComponent::UTankAimingComponent()
 }
 
 
-void UTankAimingComponent::SetBarrelReference(UTankBarrel * BarrelToSet)
-{
-	Barrel = BarrelToSet;
-}
-
-void UTankAimingComponent::SetTurretReference(UTurret * TurretToSet)
-{
-	TankTurret = TurretToSet;
-}
 
 
 void UTankAimingComponent::AimAt(FVector WorldSpaceAim, float ProjectileSpeed)
@@ -55,8 +46,14 @@ void UTankAimingComponent::AimAt(FVector WorldSpaceAim, float ProjectileSpeed)
 		MoveTurretTowards(AimDirection);
 		}
 }
+void UTankAimingComponent::Initialise(UTankBarrel * TankBarrelToSet, UTurret * TurretToSet)
+{
+	Barrel = TankBarrelToSet;
+	TankTurret = TurretToSet;
+}
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 {
+	if (!Barrel) return;
 	// Work out a difference between corrent barrel rotation and AimDirection
 	auto DeltaRotation = FindDifferenceInRotation(Barrel, AimDirection);
 	//Move the barrel the right amount this frame
