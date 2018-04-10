@@ -1,25 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "TankPlayerController.h"
 #include "Engine/World.h"
-#include "Tank.h"
 #include "TankAimingComponent.h"
 #include "GameFramework/Actor.h"
 #include "BattleTank.h"
 
 
-ATank * ATankPlayerController::GetControlledTank() const
-{
-	return Cast<ATank>(GetPawn());
-}
+
 
 void ATankPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
 	
-	auto AimingComponent = GetControlledTank()->FindComponentByClass<UTankAimingComponent>();
-	if (AimingComponent)
-		FoundAimingComponent(AimingComponent);
+	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
+	if (ensure(AimingComponent)) FoundAimingComponent(AimingComponent);
 	else UE_LOG(LogTemp, Warning, TEXT("No Player Controller"));
 }
 void ATankPlayerController::Tick(float DeltaTime)
@@ -30,12 +25,16 @@ void ATankPlayerController::Tick(float DeltaTime)
 }
 void ATankPlayerController::AimTowardsCrosshair()
 {
-	if(!GetControlledTank()) return;
-
+	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
+	if (!ensure(AimingComponent))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Player Controller"));
+		return;
+	}
 	FVector HitLocation; // OUT parameter
 	if (GetSightRayHitLocation(HitLocation))
 	{
-		GetControlledTank()->AimAt(HitLocation, GetControlledTank()->LaunchSpeed);
+		AimingComponent->AimAt(HitLocation);
 		///Get World Location of linetrace throught crosshair	
 		/// if it hits the landscape
 		 /// Tell the barrel to aim there

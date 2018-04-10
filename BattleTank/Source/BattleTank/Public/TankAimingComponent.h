@@ -24,7 +24,7 @@ class BATTLETANK_API UTankAimingComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UTankAimingComponent();
-	void AimAt(FVector WorldSpaceAim, float ProjectileSpeed);
+	void AimAt(FVector WorldSpaceAim);
 	UFUNCTION(BlueprintCallable, Category = Setup)
 	void Initialise(UTankBarrel* TankBarrelToSet, UTurret* TurretToSet);
 private:
@@ -34,6 +34,8 @@ private:
 	void MoveTurretTowards(FVector AimDirection);
 	FRotator FindDifferenceInRotation(UTankBarrel* Barrel, FVector AimDirection);
 	FRotator FindDifferenceInRotation(UTurret* Turret, FVector AimDirection);
+	UPROPERTY(EditDefaultsOnly, Category = "Firing")
+		float ProjectileSpeed = 4500;
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "State")
 	EFiringState FiringState = EFiringState::Aiming;

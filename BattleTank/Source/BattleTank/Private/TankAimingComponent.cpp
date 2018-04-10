@@ -19,10 +19,10 @@ UTankAimingComponent::UTankAimingComponent()
 
 
 
-void UTankAimingComponent::AimAt(FVector WorldSpaceAim, float ProjectileSpeed)
+void UTankAimingComponent::AimAt(FVector WorldSpaceAim)
 {
 	
-	if (!Barrel || !TankTurret) return;
+	if (!ensure(Barrel && TankTurret)) return;
 	FVector OutLaunchVelocity;
 	FVector StartLocation = Barrel->GetSocketLocation(FName("FiringPoint"));
 	/// Calculate the launch velocity (launch vector)
@@ -53,7 +53,7 @@ void UTankAimingComponent::Initialise(UTankBarrel * TankBarrelToSet, UTurret * T
 }
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 {
-	if (!Barrel) return;
+	if (!ensure(Barrel)) return;
 	// Work out a difference between corrent barrel rotation and AimDirection
 	auto DeltaRotation = FindDifferenceInRotation(Barrel, AimDirection);
 	//Move the barrel the right amount this frame
