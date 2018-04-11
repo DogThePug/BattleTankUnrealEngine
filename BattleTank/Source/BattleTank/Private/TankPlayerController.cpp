@@ -15,7 +15,6 @@ void ATankPlayerController::BeginPlay()
 	
 	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
 	if (ensure(AimingComponent)) FoundAimingComponent(AimingComponent);
-	else UE_LOG(LogTemp, Warning, TEXT("No Player Controller"));
 }
 void ATankPlayerController::Tick(float DeltaTime)
 {
@@ -25,10 +24,10 @@ void ATankPlayerController::Tick(float DeltaTime)
 }
 void ATankPlayerController::AimTowardsCrosshair()
 {
+	if (!GetPawn()) return;
 	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
 	if (!ensure(AimingComponent))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No Player Controller"));
 		return;
 	}
 	FVector HitLocation; // OUT parameter
@@ -54,13 +53,15 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
 	{
 		// Line trace along that look direction and see what we hit
 		GetLookVectorHitLocation(HitResult, LookDirection);
+		HitLocation = HitResult.Location;
+		return true;
 	}
 	
 	
 	
 
 	HitLocation = HitResult.Location;
-	return true;
+	return false;
 }
 
 bool ATankPlayerController::GetLookVectorHitLocation(FHitResult & HitResult, FVector LookDirection) const

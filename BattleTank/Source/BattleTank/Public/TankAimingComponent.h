@@ -13,7 +13,7 @@ enum class EFiringState : uint8
 	Aiming,
 	Reloading
 };
-
+class AProjectile;
 class UTankBarrel;
 class UTurret;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -27,16 +27,30 @@ public:
 	void AimAt(FVector WorldSpaceAim);
 	UFUNCTION(BlueprintCallable, Category = Setup)
 	void Initialise(UTankBarrel* TankBarrelToSet, UTurret* TurretToSet);
+	UPROPERTY(EditDefaultsOnly, Category = Firing)
+	float LaunchSpeed = 100000;
+
+	UFUNCTION(BlueprintCallable)
+	void Fire();
+
+	UPROPERTY(EditDefaultsOnly, Category = Setup)
+	TSubclassOf<AProjectile> ProjectileBlueprint;
+
+	UPROPERTY(EditDefaultsOnly, Category = Setup)
+		float ReloadTime = 3;
 private:
+	FVector AimDirection;
+	bool BarrelIsMoving();
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
+	virtual void BeginPlay() override;
+	double LastFireTime = 0;
 	UTankBarrel * Barrel = nullptr;
 	UTurret * TankTurret = nullptr;
 	void MoveBarrelTowards(FVector AimDirection);
 	void MoveTurretTowards(FVector AimDirection);
 	FRotator FindDifferenceInRotation(UTankBarrel* Barrel, FVector AimDirection);
 	FRotator FindDifferenceInRotation(UTurret* Turret, FVector AimDirection);
-	UPROPERTY(EditDefaultsOnly, Category = "Firing")
-		float ProjectileSpeed = 4500;
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "State")
-	EFiringState FiringState = EFiringState::Aiming;
+	EFiringState FiringState = EFiringState::Reloading;
 };

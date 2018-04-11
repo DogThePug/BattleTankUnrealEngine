@@ -4,6 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "TankBarrel.h"
 #include "Turret.h"
+#include "Engine/World.h"
+#include "Projectile.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/StaticMeshComponent.h"
 // Sets default values for this component's properties
@@ -16,8 +18,29 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
+void UTankAimingComponent::BeginPlay()
+{
+	LastFireTime = FPlatformTime::Seconds();
+}
 
+bool UTankAimingComponent::BarrelIsMoving()
+{
+	if(AimDirection.Equals(Barrel->GetForwardVector().GetSafeNormal(), 0.1))
+	return false;
+	else return true;
+}
 
+void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
+{
+	bool bIsReloaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTime;
+	if (!bIsReloaded) {
+		FiringState = EFiringState::Reloading;
+	}
+	else if (BarrelIsMoving()) { FiringState = EFiringState::Aiming; }
+	else {
+		FiringState = EFiringState::Locked;
+	}
+}
 
 void UTankAimingComponent::AimAt(FVector WorldSpaceAim)
 {
@@ -33,7 +56,7 @@ void UTankAimingComponent::AimAt(FVector WorldSpaceAim)
 		OutLaunchVelocity,
 		StartLocation,
 		WorldSpaceAim,
-		ProjectileSpeed,
+		LaunchSpeed,
 		false,
 		0,
 		0,
@@ -41,7 +64,8 @@ void UTankAimingComponent::AimAt(FVector WorldSpaceAim)
 	);
 		if(bSolutionFound) 
 		{
-		auto AimDirection = OutLaunchVelocity.GetSafeNormal();
+		AimDirection = OutLaunchVelocity.GetSafeNormal();
+		
 		MoveBarrelTowards(AimDirection);
 		MoveTurretTowards(AimDirection);
 		}
@@ -63,7 +87,9 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 void UTankAimingComponent::MoveTurretTowards(FVector AimDirection)
 {
 	auto DeltaRotation = FindDifferenceInRotation(TankTurret, AimDirection);
+	if (FMath::Abs(DeltaRotation.Yaw)<180)
 	TankTurret->RotateTurret(DeltaRotation.Yaw);
+	else TankTurret->RotateTurret(-DeltaRotation.Yaw);
 }
 
 FRotator UTankAimingComponent::FindDifferenceInRotation(UTankBarrel * Barrel, FVector AimDirection)
@@ -79,4 +105,27 @@ FRotator UTankAimingComponent::FindDifferenceInRotation(UTurret * Turret, FVecto
 	auto AimAsRotation = AimDirection.Rotation();
 	auto DeltaRotation = AimAsRotation - BarrelRotation;
 	return DeltaRotation;
+}
+void UTankAimingComponent::Fire()
+{
+	if (!ensure(ProjectileBlueprint))
+	{
+		return;
+	}
+	if (!ensure(Barrel)) {
+		return;
+	}
+
+	if (FiringState != EFiringState::Reloading) {
+
+		// Spawn some dood to fly sky high
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
+			ProjectileBlueprint,
+			Barrel->GetSocketLocation(FName("FiringPoint")),
+			Barrel->GetSocketRotation(FName("FiringPoint"))
+			);
+		Projectile->LaunchProjectile(LaunchSpeed);
+		LastFireTime = FPlatformTime::Seconds();
+	}
+
 }
