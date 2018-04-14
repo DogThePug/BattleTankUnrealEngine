@@ -33,6 +33,9 @@ bool UTankAimingComponent::BarrelIsMoving()
 void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	bool bIsReloaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTime;
+	if (NumberOfMaxShots == 0) {
+		FiringState = EFiringState::OutOfAmmo;
+	}else
 	if (!bIsReloaded) {
 		FiringState = EFiringState::Reloading;
 	}
@@ -116,7 +119,7 @@ void UTankAimingComponent::Fire()
 		return;
 	}
 
-	if (FiringState != EFiringState::Reloading) {
+	if (FiringState != EFiringState::Reloading && FiringState != EFiringState::OutOfAmmo) {
 
 		// Spawn some dood to fly sky high
 		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
@@ -126,6 +129,15 @@ void UTankAimingComponent::Fire()
 			);
 		Projectile->LaunchProjectile(LaunchSpeed);
 		LastFireTime = FPlatformTime::Seconds();
+		NumberOfMaxShots--;
 	}
 
+}
+EFiringState UTankAimingComponent::GetFiringState() const
+{
+	return FiringState;
+}
+int UTankAimingComponent::GetAmmoLeft()
+{
+	return NumberOfMaxShots;
 }

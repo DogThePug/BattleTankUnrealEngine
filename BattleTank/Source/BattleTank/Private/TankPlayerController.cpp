@@ -53,14 +53,12 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
 	{
 		// Line trace along that look direction and see what we hit
 		GetLookVectorHitLocation(HitResult, LookDirection);
+		if (HitResult.Location == FVector(0, 0, 0))
+		return false;
 		HitLocation = HitResult.Location;
 		return true;
 	}
-	
-	
-	
 
-	HitLocation = HitResult.Location;
 	return false;
 }
 

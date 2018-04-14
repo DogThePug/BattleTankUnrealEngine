@@ -20,12 +20,15 @@ private:
 	// Sets default values for this pawn's properties
 	ATank();
 	
-	
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
-	
+	UPROPERTY(EditDefaultsOnly)
+	float CurrentHealth = 100.f;
+public:
+	UFUNCTION(BlueprintCallable)
+	float GetCurrentHealth();
 	
 };

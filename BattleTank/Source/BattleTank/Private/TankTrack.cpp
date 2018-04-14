@@ -31,13 +31,19 @@ void UTankTrack::ApplySidewayForce()
 void UTankTrack::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit)
 {
 	// Drive the tracks
+	DriveTracks();
 	//Apply sideway force
 	ApplySidewayForce();
+	//reset throttle for the next cycle
+	ClampedThrottle = 0.f;
 }
 void UTankTrack::SetThrottle(float Throttle)
 {
-	auto ClampedThrottle = FMath::Clamp<float>(Throttle, -1, 1);
-	auto ForceApplied = GetForwardVector()*Throttle*TrackMaxDrivingForce;
+	ClampedThrottle = FMath::Clamp<float>(ClampedThrottle + Throttle,-1.f,1.f);
+}
+void UTankTrack::DriveTracks()
+{
+	auto ForceApplied = GetForwardVector()*ClampedThrottle*TrackMaxDrivingForce;
 	auto ForceLocation = GetComponentLocation();
 	auto TankRoot = Cast<UPrimitiveComponent>(GetOwner()->GetRootComponent());
 	TankRoot->AddForceAtLocation(ForceApplied, ForceLocation);

@@ -11,7 +11,8 @@ enum class EFiringState : uint8
 {
 	Locked,
 	Aiming,
-	Reloading
+	Reloading,
+	OutOfAmmo
 };
 class AProjectile;
 class UTankBarrel;
@@ -22,6 +23,8 @@ class BATTLETANK_API UTankAimingComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:	
+	UPROPERTY(EditDefaultsOnly, Category = "Firing")
+	int32 NumberOfMaxShots = 5;
 	// Sets default values for this component's properties
 	UTankAimingComponent();
 	void AimAt(FVector WorldSpaceAim);
@@ -32,12 +35,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Fire();
-
+	UFUNCTION(BlueprintCallable)
+	int GetAmmoLeft();
 	UPROPERTY(EditDefaultsOnly, Category = Setup)
 	TSubclassOf<AProjectile> ProjectileBlueprint;
 
 	UPROPERTY(EditDefaultsOnly, Category = Setup)
 		float ReloadTime = 3;
+	EFiringState GetFiringState() const;
 private:
 	FVector AimDirection;
 	bool BarrelIsMoving();

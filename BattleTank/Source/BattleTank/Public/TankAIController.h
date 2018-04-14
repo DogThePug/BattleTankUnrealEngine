@@ -18,7 +18,8 @@ public:
 	void Tick(float DeltaTime) override;
 private:
 	//How close can enemy tank come to player
-	float AcceptanceRadius = 3000;
+	UPROPERTY(EditAnywhere)
+	float AcceptanceRadius = 5000;
 	void BeginPlay() override;
 	
 };

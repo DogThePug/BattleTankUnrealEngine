@@ -22,7 +22,19 @@ void ATank::BeginPlay()
 void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
 
+float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	float DamageToApply = FMath::Clamp<float>(DamageAmount, 0, CurrentHealth);
+	UE_LOG(LogTemp, Warning, TEXT("%f damage to apply, Clamped from %f"), DamageToApply, DamageAmount);
+	CurrentHealth -= DamageToApply;
+	return DamageToApply;
+}
+
+float ATank::GetCurrentHealth()
+{
+	return CurrentHealth;
 }
 
 
