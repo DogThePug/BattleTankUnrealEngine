@@ -18,8 +18,11 @@ public:
 	void Tick(float DeltaTime) override;
 private:
 	//How close can enemy tank come to player
-	UPROPERTY(EditAnywhere)
-	float AcceptanceRadius = 5000;
+	UPROPERTY(EditDefaultsOnly, Category = "Setup")
+	float AcceptanceRadius = 10000;
 	void BeginPlay() override;
-	
+	virtual void SetPawn(APawn* InPawn) override;
+	UFUNCTION()
+	void OnPossessedTankDeath();
 };
+

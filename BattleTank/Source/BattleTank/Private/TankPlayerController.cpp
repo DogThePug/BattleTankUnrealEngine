@@ -2,6 +2,8 @@
 #include "TankPlayerController.h"
 #include "Engine/World.h"
 #include "TankAimingComponent.h"
+#include "Tank.h"
+#include "Engine/World.h"
 #include "GameFramework/Actor.h"
 #include "BattleTank.h"
 
@@ -61,6 +63,13 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
 
 	return false;
 }
+
+ATank * ATankPlayerController::GetOwningTank()
+{
+	return Cast<ATank>(GetPawn());
+}
+
+
 
 bool ATankPlayerController::GetLookVectorHitLocation(FHitResult & HitResult, FVector LookDirection) const
 {

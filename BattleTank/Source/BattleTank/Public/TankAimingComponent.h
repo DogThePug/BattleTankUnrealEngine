@@ -35,7 +35,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Fire();
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintPure)
 	int GetAmmoLeft();
 	UPROPERTY(EditDefaultsOnly, Category = Setup)
 	TSubclassOf<AProjectile> ProjectileBlueprint;

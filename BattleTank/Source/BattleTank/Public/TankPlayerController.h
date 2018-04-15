@@ -11,7 +11,7 @@
  *  Responsible for helping the player aim.
  */
 class UTankAimingComponent;
-
+class ATank;
 UCLASS()
 class BATTLETANK_API ATankPlayerController : public APlayerController
 {
@@ -33,4 +33,6 @@ private:
 protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Setup")
 	void FoundAimingComponent(UTankAimingComponent* AimCompRef);
+	UFUNCTION(BlueprintPure, Category = "Referencing")
+	ATank* GetOwningTank();
 };
