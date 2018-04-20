@@ -52,18 +52,28 @@ void AProjectile::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor,
 	ImpactBlast->Activate();
 	LaunchBlast->Deactivate();
 	ExplosionForce->FireImpulse();
-
+	
 	SetRootComponent(ImpactBlast);
 	CollisionMesh->DestroyComponent();
-
-	UGameplayStatics::ApplyRadialDamage(
+	UGameplayStatics::ApplyRadialDamageWithFalloff(
 		this,
 		ProjectileDamage,
+		5,
 		GetActorLocation(),
+		ExplosionForce->Radius / 3.f,
 		ExplosionForce->Radius,
+		1.f,
 		UDamageType::StaticClass(),
 		TArray<AActor*>()
 	);
+/*	UGameplayStatics::ApplyRadialDamage(
+		this,
+		ProjectileDamage/2,
+		GetActorLocation(),
+		ExplosionForce->Radius / 2,
+		UDamageType::StaticClass(),
+		TArray<AActor*>()
+	);*/
 
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(

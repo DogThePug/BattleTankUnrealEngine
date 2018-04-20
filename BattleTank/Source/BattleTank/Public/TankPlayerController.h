@@ -21,6 +21,9 @@ public:
 	void Tick(float DeltaTime) override;
 	void AimTowardsCrosshair();
 private:
+	UFUNCTION()
+	void OnPossessedTankDeath();
+	virtual void SetPawn(APawn* InPawn) override;
 	bool GetLookVectorHitLocation(FHitResult& HitResult, FVector LookDirection) const;
 	bool GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection) const;
 	bool GetSightRayHitLocation(FVector& HitLocation) const;

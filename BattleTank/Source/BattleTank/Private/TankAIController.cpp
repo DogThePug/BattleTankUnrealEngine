@@ -4,6 +4,7 @@
 #include "Engine/World.h"
 #include "Classes/AIController.h"
 #include "Tank.h"
+#include "GameFramework/Pawn.h"
 #include "TankAimingComponent.h"
 #include "GameFramework/Actor.h"
 #include "BattleTank.h"
@@ -29,7 +30,10 @@ void ATankAIController::SetPawn(APawn* InPawn)
 }
 void ATankAIController::OnPossessedTankDeath()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Tank is ded"));
+	if (GetPawn()) {
+		auto PossessedTank = Cast<ATank>(GetPawn());
+		PossessedTank->DetachFromControllerPendingDestroy();
+	}
 }
 void ATankAIController::Tick(float DeltaTime)
 {
@@ -37,8 +41,8 @@ void ATankAIController::Tick(float DeltaTime)
 	APawn * PlayerTank = GetWorld()->GetFirstPlayerController()->GetPawn();
 	auto ControlledTank = GetPawn();
 	auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
-	if (ensure(PlayerTank && ControlledTank)) {
-		// TODO Move towards player
+	if (PlayerTank && ControlledTank) {
+		//Move towards player
 		MoveToActor(PlayerTank, AcceptanceRadius);
 		//Aim towards player
 		AimingComponent->AimAt(PlayerTank->GetActorLocation());
