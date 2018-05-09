@@ -95,7 +95,7 @@ bool ATankPlayerController::GetLookVectorHitLocation(FHitResult & HitResult, FVe
 		HitResult,
 		PlayerCameraManager->GetCameraLocation(), // the location of player camera
 		PlayerCameraManager->GetCameraLocation() + LineEnd,
-		ECollisionChannel::ECC_Visibility
+		ECollisionChannel::ECC_Camera
 	))
 	return true;
 
